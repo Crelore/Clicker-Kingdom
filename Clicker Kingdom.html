@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{padding: 0; margin: 0;}
+body {background-color: rgb(222, 184, 135); 
+    border: 5px solid #644536; 
+    font-family: Papyrus, fantasy; 
+    font-size: 2vmin;
+    margin: 0;}
+h1   {color: Black;}
+p    {color: Black;}
+#image:hover  {transform: scale(1.05,1.05);}
+#image:active {transform: scale(1.0,1.0);}
+.button:hover  {transform: scale(1.05,1.05);}
+.button:active {transform: scale(1.0,1.0);}
+.gamewindow {
+    position: relative;
+    bottom: 10%;
+    background-image: url("frame.jpg"); 
+    background-repeat: no-repeat; 
+    background-color: rgb(222, 184, 135, 1);   
+    background-blend-mode: multiply;
+    background-size: contain;
+    aspect-ratio: 7 / 10;
+    height: 100vmin;
+    width: 70vmin;
+    min-height: 300px;
+    border: 2px solid #644536; 
+    margin: auto;}
+.textwindow {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: center;
+    height: 90%;
+    width: 90%;
+    margin: 5%;
+}
+.shopwindow {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  gap: 5px;
+}
+.button {
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    background-color: #ffe0b5;
+    border: 3px solid #644536;
+    padding: 3px;
+    color: black;
+    white-space: normal;
+    font-family: Papyrus, fantasy; 
+    font-size: 2vmin;
+}
+</style>
+</head>
+<body>
+<div class="gamewindow">
+    <div class="textwindow">
+        <h1>Clicker</h1>
+        <h1>Kuningaskunta</h1><p id="current">Kuningaskuntasi odottaa</p>
+        <p id="kultakolikot"></p>
+        <p id="maaherrat"></p>
+        <p id="veronkerääjät"></p>
+        <p id="verot"></p>
+        <input type="image"  id="image" src="castle.png " onclick="clickbutton()" value="Hallitse" style="width:20%;height:20%;" />
+        <h2 id="shop">Käskyt</h2>
+            <div class="shopwindow">
+            <input type="button" class="button" onclick="Maaherra()" value="Nimitä maaherra: -10 kultakolikkoa">
+            <input type="button" class="button" onclick="Verottaja()" value="Nimitä veronkerääjä: -1 maanherra">
+            <input type="button" class="button" onclick="Sotimaan()" value="Lähde sotimaan: -10 maanherraa">
+        </div>
+    </div>
+</div>
+
+<script>
+setInterval(Verotus, 10000);
+value = 0;
+goldfield = document.getElementById("kultakolikot");
+lordfield = document.getElementById("maaherrat");
+verotfield = document.getElementById("verot");
+verottajatfield = document.getElementById("veronkerääjät");
+currentfield = document.getElementById("current");
+verot = 1;
+maaherrat = 0;
+verottajat = 0;
+fieldset();
+
+function clickbutton(){
+    value += verot;
+    currentfield.innerHTML = "Vuosi on kulunut ja olet kerännyt veroja";
+    fieldset();
+}
+
+function Maaherra(){
+    verot += 1;
+    maaherrat += 1;
+    value -= 10;
+    currentfield.innerHTML = "Olet nimennyt uuden maaherran ja antanut hänelle maita. Hän lupaa maksaa veroja ja lähettää sotilaita kun niitä tarvitset.";
+    fieldset();
+}
+
+function Sotimaan(){
+    maaherrat -= 10;
+    value += 1000;
+    currentfield.innerHTML = "Olet lähtenyt sotimaan. Rohkeat maanherrasi ratsastavat armeijoineen ritareina joukkoosi ja kuolevat, mutta sotasaaliita on kylläästi";
+    fieldset();
+}
+
+function Verottaja(){
+    if (maaherrat < 1) {
+        currentfield.innerHTML = "Sinulla ei ole maaherraa josta voisi tehdä veronkerääjän";
+        return;}
+    maaherrat -= 1;
+    verottajat += 1;
+    currentfield.innerHTML = "Olet käskenyt maanherraasi keräämään veroja sinun puolesta. Nyt hän kerää maanpojiltasi veroja ja tuo ne sinulle vaikka et itse keräisi veroja.";
+    fieldset();
+}
+
+function Verotus(){
+if (verottajat > 0){
+    value += verottajat;
+    fieldset();
+}
+}
+function fieldset(){
+    if (verot == 1) {verotfield.innerHTML = "Kuningaskunnan verot on " + verot + " kolikko vuodessa";}
+    else {verotfield.innerHTML = "Kuningaskunnan verot on " + verot + " kolikkoa vuodessa";}
+    if (value == 1) {goldfield.innerHTML = value + " kultakolikko";}
+    else {goldfield.innerHTML = value + " kultakolikkoa";}
+    if (maaherrat == 1) {lordfield.innerHTML = maaherrat + " maanherra";}
+    else {lordfield.innerHTML = maaherrat + " maanherraa";}
+    if (verottajat == 1) {verottajatfield.innerHTML = verottajat + " veronkerääjä";}
+    else {verottajatfield.innerHTML = verottajat + " veronkerääjää";}
+    checkforevents();
+}
+
+function checkforevents(){
+    if (value < 0) {
+        maaherrojenkapina();
+        return;
+    }
+    if (maaherrat < 0) {
+        sotatappio();
+        return;
+    }
+}
+
+function maaherrojenkapina() {
+    currentfield.innerHTML = "KAPINA!";
+    goldfield.innerHTML = "Annoit liikaa valtaa maaherroille, kruunusi viedään vallankumouksessa ja kuningaskuntasi unohdetaan.";
+    if (maaherrat == 1) {lordfield.innerHTML = maaherrat + " maaherra juhlii sinun loppuasi";}
+    else {lordfield.innerHTML = maaherrat + " maaherraa juhlii sinun loppuasi";}
+    verottajatfield.innerHTML = "";
+    verotfield.innerHTML = "Jos olet valmis yrittämään uudestaan, paina hallitse.";
+    verot = 1;
+    value = 0;
+    maaherrat = 0;
+    verottajat = 0;
+}
+function sotatappio() {
+    currentfield.innerHTML = "TAPPIO!";
+    goldfield.innerHTML = "Sotasi epäonnistuu ja toinen valtakunta päihittää sinut.";
+    lordfield.innerHTML = "Joukkosi teurastetaan, vaikka yrittävät antautua";
+    verottajatfield.innerHTML = "";
+    verotfield.innerHTML = "Jos olet valmis yrittämään uudestaan, paina hallitse.";
+    verot = 1;
+    value = 0;
+    maaherrat = 0;
+    verottajat = 0;
+}
+//Castle: Flaticon.com
+//<input type="button" onclick="clickbutton()" value="Hallitse">
+//<a href="https://www.vecteezy.com/free-vector/vintage-border">Vintage Border Vectors by Vecteezy</a>
+</script>
+</body>
+</html> 
+
